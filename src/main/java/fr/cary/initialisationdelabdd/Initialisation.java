@@ -54,7 +54,8 @@ public class Initialisation {
              mdp varchar(30) not null,
              annee integer not null,
              fonction integer,
-             role integer not null
+             role integer not null,
+             idclasse integer not null
             )
             """);
 
@@ -72,10 +73,18 @@ public class Initialisation {
             """);
             st.executeUpdate(
                     """
+            create table Classe(
+             idclasse integer primary key generated always as identity,
+             classe varchar(30) not null,
+
+
+            )
+            """);
+            st.executeUpdate(
+                    """
             create table GroupeModule(
              idgroupemodule integer primary key generated always as identity,
-             creneauhor integer not null,
-             nbrplaceG integer not null
+             creneauhor integer not null
 
             )
             """);
@@ -90,10 +99,30 @@ public class Initialisation {
             """);
             st.executeUpdate(
                     """
+                    alter table Personne
+                        add constraint fk_Personne_idclasse
+                        foreign key (idclasse) references Personne(idclasse)
+                    """);
+            
+            st.executeUpdate(
+                    """
                     alter table Module
                         add constraint fk_Module_idgroupemodule
                         foreign key (idgroupemodule) references GroupeModule(idgroupemodule)
                     """);
+            st.executeUpdate(
+                    """
+                    alter table Choix
+                        add constraint fk_Choix_idpersonne
+                        foreign key (idgroupemodule) references Choix(idpersonne)
+                    """);
+             st.executeUpdate(
+                    """
+                    alter table Choix
+                        add constraint fk_Choix_idmodule
+                        foreign key (idgroupemodule) references Choix(idmodule)
+                    """);
+
 
             con.commit();
         } catch (SQLException ex) {
@@ -111,30 +140,31 @@ public class Initialisation {
     public static void deleteSchema(Connection con) throws SQLException {
         try (Statement st = con.createStatement()) {
             con.setAutoCommit(false);
-//            st.executeUpdate(
-//                    """
-//               alter table Personne 
-//                 drop constraint 
-//               """);
-//             st.executeUpdate(
-//                    """
-//               alter table Moduleelec 
-//                 drop constraint 
-//               """);
-//              st.executeUpdate(
-//                    """
-//               alter table GroupeModule
-//                 drop constraint 
-//               """);
-//            st.executeUpdate(
-//                    """
-//               alter table Choix 
-//                 drop constraint
-//               """);
+            st.executeUpdate(
+                    """
+               alter table Personne 
+                 drop constraint fk_Personne_idclasse
+               """);
+             st.executeUpdate(
+                    """
+               alter table Module
+                 drop constraint fk_Module_idgroupemodule
+               """);
+              st.executeUpdate(
+                    """
+               alter table Choix fk_Choix_idpersonne
+                 drop constraint 
+               """);
+            st.executeUpdate(
+                    """
+               alter table Choix 
+                 drop constraint fk_Choix_idmodule
+               """);
             st.executeUpdate("drop table Personne");
             st.executeUpdate("drop table Module ");
             st.executeUpdate("drop table GroupeModule");
             st.executeUpdate("drop table  Choix");
+            st.executeUpdate("drop table  Classe");
 
             con.commit();
         } catch (SQLException ex) {
@@ -156,7 +186,7 @@ public class Initialisation {
             } catch (Exception ex) {
                 System.out.println("Problème de suppression");
             }
-            createSchema(con);
+//            createSchema(con);
 
         } catch (Exception ex) {
             System.out.println("Probleme : " + ex);
