@@ -75,7 +75,7 @@ public class Initialisation {
                     """
             create table Classe(
              idclasse integer primary key generated always as identity,
-             classe varchar(30) not null,
+             classe varchar(30) not null
 
 
             )
@@ -94,14 +94,14 @@ public class Initialisation {
              idchoix integer primary key generated always as identity,
              ordre integer not null,
              idpersonne integer not null,
-             idgroupemodule integer not null    
+             idmodule integer not null    
             )
             """);
             st.executeUpdate(
                     """
                     alter table Personne
                         add constraint fk_Personne_idclasse
-                        foreign key (idclasse) references Personne(idclasse)
+                        foreign key (idclasse) references Classe(idclasse)
                     """);
             
             st.executeUpdate(
@@ -114,13 +114,13 @@ public class Initialisation {
                     """
                     alter table Choix
                         add constraint fk_Choix_idpersonne
-                        foreign key (idgroupemodule) references Choix(idpersonne)
+                        foreign key (idpersonne) references Personne(idpersonne)
                     """);
              st.executeUpdate(
                     """
                     alter table Choix
                         add constraint fk_Choix_idmodule
-                        foreign key (idgroupemodule) references Choix(idmodule)
+                        foreign key (idmodule) references Module(idmodule)
                     """);
 
 
@@ -152,8 +152,8 @@ public class Initialisation {
                """);
               st.executeUpdate(
                     """
-               alter table Choix fk_Choix_idpersonne
-                 drop constraint 
+               alter table Choix 
+                 drop constraint fk_Choix_idpersonne
                """);
             st.executeUpdate(
                     """
@@ -163,8 +163,8 @@ public class Initialisation {
             st.executeUpdate("drop table Personne");
             st.executeUpdate("drop table Module ");
             st.executeUpdate("drop table GroupeModule");
-            st.executeUpdate("drop table  Choix");
-            st.executeUpdate("drop table  Classe");
+            st.executeUpdate("drop table Choix");
+            st.executeUpdate("drop table Classe");
 
             con.commit();
         } catch (SQLException ex) {
@@ -184,12 +184,12 @@ public class Initialisation {
                 deleteSchema(con);
 
             } catch (Exception ex) {
-                System.out.println("Problème de suppression");
+                System.out.println("Problème dans la suppression ou aucun élément à supprimer"+ ex);
             }
-//            createSchema(con);
+            createSchema(con);
 
         } catch (Exception ex) {
-            System.out.println("Probleme : " + ex);
+            System.out.println("Probleme dans la création: " + ex);
         }
 
     }
